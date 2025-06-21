@@ -1,10 +1,6 @@
 use bevy::prelude::*;
-use bevy_2settings::{
-    BevyError, DynamicSetting, Settings, bevy_ok,
-    configurators::{TomlFileConfiguration, WithConfigurator as _},
-};
+use bevy_2settings::prelude::*;
 use serde::{Deserialize, Serialize};
-use strum::VariantArray;
 
 #[derive(Settings, Resource, Serialize, Debug, Reflect)]
 struct Test {
@@ -25,7 +21,7 @@ struct NestedTest {
     control_selector: ControlSelector,
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug, Reflect, VariantArray)]
+#[derive(Clone, Serialize, Deserialize, Debug, Reflect)]
 enum ControlSelector {
     Keyboard,
     Mouse,
@@ -43,13 +39,8 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(Test::with_configurator(TomlFileConfiguration::default()))
-        .add_systems(Startup, setup)
         .add_systems(Update, (get_settings, space_pressed))
         .run();
-}
-
-fn setup(mut commands: Commands) {
-    commands.spawn(Camera2d);
 }
 
 fn get_settings(settings: Res<Test>) {

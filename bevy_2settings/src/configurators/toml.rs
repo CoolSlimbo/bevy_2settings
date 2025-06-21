@@ -1,3 +1,7 @@
+//! # Toml configurator
+//!
+//! See [`TomlFileConfiguration`]
+
 use crate::{Configurator, Settings};
 use bevy::prelude::{BevyError, Resource};
 use std::{
@@ -7,6 +11,9 @@ use std::{
     path::PathBuf,
 };
 
+/// A simple configurator for toml, saves to a file.
+///
+/// Doens't rely on bevy's asset system, so it can be used for a wide range of settings.
 #[derive(Debug, Resource)]
 pub struct TomlFileConfiguration<C>(PathBuf, PhantomData<C>);
 

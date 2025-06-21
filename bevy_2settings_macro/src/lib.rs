@@ -83,11 +83,11 @@ fn derive_settings(input: TokenStream) -> syn::Result<proc_macro2::TokenStream> 
 
         let internal_name = ident.to_string();
         field_meta.push(quote! {
-            ::bevy_2settings::Field {
+            ::bevy_2settings::prelude::Field {
                 name: #name,
                 internal_name: #internal_name,
                 description: #field_docs,
-                styling: &[#( ::bevy_2settings::Styling::#styling ),*],
+                styling: &[#( ::bevy_2settings::prelude::Styling::#styling ),*],
                 nested: #nested,
             }
         });
@@ -96,7 +96,7 @@ fn derive_settings(input: TokenStream) -> syn::Result<proc_macro2::TokenStream> 
         let (partial_ident, view_ident) = get_altnerate_idents(&ty);
 
         let partial_serde_attr = match serde {
-            Some(SerdePassthrow(meta)) => quote! { #[ #meta ] },
+            Some(SerdePassthrough(meta)) => quote! { #[ #meta ] },
             None => quote! {},
         };
 
@@ -143,7 +143,7 @@ fn derive_settings(input: TokenStream) -> syn::Result<proc_macro2::TokenStream> 
                 Some(MultiVal::Function(c)) => quote! {
                     #ident: match partial. #ident {
                         Some(v) => v,
-                        None => ::bevy_2settings::RunSystemOnce::run_system_once(&mut *world, #c)??,
+                        None => ::bevy_2settings::prelude::RunSystemOnce::run_system_once(&mut *world, #c)??,
                     },
                 },
                 None => quote! {
@@ -159,7 +159,7 @@ fn derive_settings(input: TokenStream) -> syn::Result<proc_macro2::TokenStream> 
         // get_view_tree field implementors
         let f = if nested {
             // quote! {
-            //     #ident: <#ty as ::bevy_2settings::Settings>::get_view_tree(&self.#ident, &mut *world)?,
+            //     #ident: <#ty as ::bevy_2settings::prelude::Settings>::get_view_tree(&self.#ident, &mut *world)?,
             // }
             quote! {
                 #ident: self.nested.get_view_tree(&mut *world)?,
@@ -176,7 +176,7 @@ fn derive_settings(input: TokenStream) -> syn::Result<proc_macro2::TokenStream> 
                 }
                 Some(MultiVal::Function(c)) => {
                     quote! {
-                        #ident: ::bevy_2settings::RunSystemOnce::run_system_once(
+                        #ident: ::bevy_2settings::prelude::RunSystemOnce::run_system_once(
                             &mut *world,
                             #c
                         )??,
@@ -195,9 +195,9 @@ fn derive_settings(input: TokenStream) -> syn::Result<proc_macro2::TokenStream> 
 
     let styles = derive_args.styling;
     let meta = quote! {
-        const META: ::bevy_2settings::Meta = ::bevy_2settings::Meta {
+        const META: ::bevy_2settings::prelude::Meta = ::bevy_2settings::prelude::Meta {
             fields: &[#( #field_meta ),*],
-            self_stylings: &[#( ::bevy_2settings::Styling::#styles ),*],
+            self_stylings: &[#( ::bevy_2settings::prelude::Styling::#styles ),*],
         };
     };
 
@@ -214,7 +214,7 @@ fn derive_settings(input: TokenStream) -> syn::Result<proc_macro2::TokenStream> 
     let (partial_ident, view_ident) = get_altnerate_idents(input_ident);
     let structual_impl = quote! {
         #[allow(warnings, clippy::all)]
-        #[derive(Debug, Clone, Default, ::bevy_2settings::Deserialize)]
+        #[derive(Debug, Clone, Default, ::bevy_2settings::prelude::Deserialize)]
         #[serde(default)]
         struct #partial_ident {
             #( #partial_struct_fields )*
@@ -228,7 +228,7 @@ fn derive_settings(input: TokenStream) -> syn::Result<proc_macro2::TokenStream> 
     };
 
     let from_partial_impl = quote! {
-        fn from_partial(partial: Self::Partial, world: &mut ::bevy_2settings::World) -> ::std::result::Result<Self, ::bevy_2settings::BevyError> {
+        fn from_partial(partial: Self::Partial, world: &mut ::bevy_2settings::prelude::World) -> ::std::result::Result<Self, ::bevy_2settings::prelude::BevyError> {
             Ok(Self {
                 #( #partial_impls )*
             })
@@ -236,7 +236,7 @@ fn derive_settings(input: TokenStream) -> syn::Result<proc_macro2::TokenStream> 
     };
 
     let get_view_tree_impl = quote! {
-        fn get_view_tree(&self, world: &mut ::bevy_2settings::World) -> ::std::result::Result<Self::ViewNode, ::bevy_2settings::BevyError> {
+        fn get_view_tree(&self, world: &mut ::bevy_2settings::prelude::World) -> ::std::result::Result<Self::ViewNode, ::bevy_2settings::prelude::BevyError> {
             Ok(Self::ViewNode {
                 #( #view_impls )*
             })
@@ -304,18 +304,18 @@ impl FromMeta for IdentList {
 }
 
 #[derive(Debug, Clone)]
-struct SerdePassthrow(syn::Meta);
+struct SerdePassthrough(syn::Meta);
 
-impl Parse for SerdePassthrow {
+impl Parse for SerdePassthrough {
     fn parse(input: ParseStream) -> Result<Self, Error> {
         let meta = input.parse::<syn::Meta>()?;
-        Ok(SerdePassthrow(meta))
+        Ok(SerdePassthrough(meta))
     }
 }
 
-impl FromMeta for SerdePassthrow {
+impl FromMeta for SerdePassthrough {
     fn from_meta(item: &Meta) -> darling::Result<Self> {
-        Ok(SerdePassthrow(item.clone()))
+        Ok(SerdePassthrough(item.clone()))
     }
 }
 
@@ -332,7 +332,7 @@ struct TopLevelSettings {
 struct FieldSettings {
     ty: syn::Type,
     // attrs: Vec<syn::Attribute>,
-    serde: Option<SerdePassthrow>,
+    serde: Option<SerdePassthrough>,
     ident: Option<syn::Ident>,
     name: String,
     #[darling(default)]

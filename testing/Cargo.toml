@@ -7,4 +7,3 @@ edition = "2024"
 bevy_2settings = { path = "../bevy_2settings" }
 bevy = "0.16.0"
 serde = { version = "1.0.219", features = ["derive"] }
-strum = { version = "0.27.1", features = ["derive"] }
