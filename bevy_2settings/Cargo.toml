@@ -2,6 +2,7 @@
 name = "bevy_2settings"
 version = "0.0.1"
 edition = "2024"
+repository = "https://github.com/CoolSlimbo/bevy_2settings"
 
 [dependencies]
 bevy_2settings_macro = { path = "../bevy_2settings_macro" }
