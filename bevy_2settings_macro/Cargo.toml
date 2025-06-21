@@ -2,6 +2,13 @@
 name = "bevy_2settings_macro"
 version = "0.0.1"
 edition = "2024"
+authors = ["CoolSlimbo (Luke)"]
+repository = "https://github.com/CoolSlimbo/bevy_2settings"
+license = "MIT"
+description = "A simple settings system for bevy"
+documentation = "https://docs.rs/bevy_2settings/latest/bevy_2settings/"
+readme = "../readme.md"
+keywords = ["bevy", "settings"]
 
 [lib]
 proc-macro = true
