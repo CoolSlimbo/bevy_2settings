@@ -1,0 +1,5 @@
+fullscreen = false
+
+[nested]
+anti_screen = false
+control_selector = "Keyboard"

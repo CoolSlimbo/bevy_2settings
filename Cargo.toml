@@ -1,0 +1,7 @@
+[workspace]
+resolver = "3"
+members = [
+    "bevy_2settings_macro",
+    "bevy_2settings",
+    "testing",
+]
