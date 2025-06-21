@@ -7,7 +7,6 @@ What `bevy_2settings` offers:
 - An easy to setup, macro based settings system.
     - See the [example](#getting-started)!
 - Dynamic range of configurators
-    - Want to use multiple? You can!
 - Fully documented, and panic free (minus plugin code, see [here](https://github.com/bevyengine/bevy/issues/2337).)
 - TODO: UI components, that can be easily bound
 
